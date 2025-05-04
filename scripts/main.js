@@ -157,15 +157,54 @@ async function getQuestions() {
       },
       {
         question:
-          "¿Cuál es la diferencia principal entre 'var', 'let' y 'const' en JavaScript?",
+          "¿Cuál es el operador de comparación para comprobar la igualdad entre valor y tipo en JavaScript?",
+        options: ["==", "===", "!=", "!=="],
+        correct: "===",
+      },
+      {
+        question:
+          "¿Cuál es la sintaxis correcta para declarar una variable en JavaScript?",
         options: [
-          "'var' y 'let' tienen ámbito de bloque, 'const' tiene ámbito global",
-          "'var' tiene ámbito de función, mientras que 'let' y 'const' tienen ámbito de bloque",
-          "No hay diferencia, todos tienen el mismo ámbito",
-          "'const' permite reasignar valores, 'let' no",
+          "variablename = 'Juan'",
+          "nombre variable = 'Juan'",
+          "v nombre = 'Juan'",
+          "var nombre = 'Juan'",
         ],
-        correct:
-          "'var' tiene ámbito de función, mientras que 'let' y 'const' tienen ámbito de bloque",
+        correct: "var nombre = 'Juan'",
+      },
+      {
+        question:
+          "¿Cuál es el método para añadir un elemento al final de una matriz en JavaScript?",
+        options: [
+          "array.append(elemento)",
+          "array.add(elemento)",
+          "array.push(elemento)",
+          "array.push(elemento)",
+        ],
+        correct: "array.push(elemento)",
+      },
+
+      {
+        question:
+          "¿Cuál es la función para convertir una cadena en un número en JavaScript?",
+        options: [
+          "parseInt()",
+          "convertirEnInt()",
+          "cadenaANúmero()",
+          "aNúmero()",
+        ],
+        correct: "parseInt()",
+      },
+      {
+        question:
+          "¿Cuál es el método para eliminar el último elemento de una matriz en JavaScript?",
+        options: [
+          "array.pop()",
+          "array.eliminarÚltimo()",
+          "array.borrarÚltimo()",
+          "array.splice(-1)",
+        ],
+        correct: "array.pop()",
       },
       {
         question: "¿Qué es una 'closure' en JavaScript?",
