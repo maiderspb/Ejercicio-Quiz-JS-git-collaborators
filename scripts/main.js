@@ -75,14 +75,16 @@ function showQuestion() {
   const container = document.getElementById("quiz-container");
   container.innerHTML = `
     <article class="question-card">
+     <div class="notif">
+      </div>
       <h2>${q.question}</h2>
       <div class="options-grid">
         ${q.options
-          .map(
-            (opt) =>
-              `<button onclick="handleAnswer('${opt}', '${q.correct}')">${opt}</button>`
-          )
-          .join("")}
+      .map(
+        (opt) =>
+          `<button onclick="handleAnswer('${opt}', '${q.correct}')">${opt}</button>`
+      )
+      .join("")}
       </div>
       <div class="question-count">Pregunta ${current + 1} de 10</div>
       <div class="next-btn">
@@ -108,6 +110,17 @@ function nextQuestion() {
   } else {
     endQuiz();
   }
+}
+function createNotif(mensaje, tipo) {
+  const alert = document.createElement("div");
+  alert.className = `alert alert-${tipo} mt-3`;
+  alert.textContent = mensaje;
+  alertContainer.appendChild(alert);
+  setTimeout(() => {
+      alert.remove();
+
+    },3000)
+  
 }
 
 function endQuiz() {
