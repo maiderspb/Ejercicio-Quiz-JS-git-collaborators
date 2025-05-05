@@ -190,17 +190,6 @@ async function getQuestions() {
       },
       {
         question:
-          "¿Cuál es la sintaxis correcta para declarar una variable en JavaScript?",
-        options: [
-          "variablename = 'Juan'",
-          "nombre variable = 'Juan'",
-          "v nombre = 'Juan'",
-          "var nombre = 'Juan'",
-        ],
-        correct: "var nombre = 'Juan'",
-      },
-      {
-        question:
           "¿Cuál es el método para añadir un elemento al final de una matriz en JavaScript?",
         options: [
           "array.append(elemento)",
