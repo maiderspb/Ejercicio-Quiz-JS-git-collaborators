@@ -96,6 +96,7 @@ button:hover {
   border: none;
   cursor: pointer;
   transition: transform 0.2s ease;
+  height: 100%;
 }
 
 .options-grid button:hover {

@@ -95,7 +95,7 @@ function showQuestion() {
 
   `;
 }
-
+const alert = document.createElement("div");
 
 function handleAnswer(selected, correct) {
   const buttons = document.querySelectorAll(".options-grid button");
@@ -105,6 +105,7 @@ function handleAnswer(selected, correct) {
     createNotif('respondido correctamente','success')
     setTimeout(nextQuestion, 500);
     score++;
+    
   } else{
     createNotif('error','danger')
     setTimeout(nextQuestion, 500);
@@ -115,6 +116,7 @@ function handleAnswer(selected, correct) {
 }
 
 function nextQuestion() {
+  alert.remove()
   current++;
   if (current < 10) {
     showQuestion();
@@ -124,7 +126,7 @@ function nextQuestion() {
 }
 
 function createNotif(mensaje, tipo) {
-  const alert = document.createElement("div");
+
   alert.className = `alert alert-${tipo} mt-3`;
   alert.textContent = mensaje;
   alertcontainer.appendChild(alert);
