@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 });
-
+const alertcontainer = document.getElementById('alertContainer');
 function showQuestion() {
   const q = questions[current];
   const container = document.getElementById("quiz-container");
@@ -92,6 +92,7 @@ function showQuestion() {
         <button onclick="nextQuestion()">Siguiente</button>
       </div>
     </article>
+
   `;
 }
 
@@ -102,13 +103,15 @@ function handleAnswer(selected, correct) {
 
   if (selected === correct){
     createNotif('respondido correctamente','success')
+    setTimeout(nextQuestion, 500);
     score++;
   } else{
     createNotif('error','danger')
+    setTimeout(nextQuestion, 500);
   }
 
 
-  //setTimeout(nextQuestion, 500);
+ 
 }
 
 function nextQuestion() {
@@ -119,9 +122,8 @@ function nextQuestion() {
     endQuiz();
   }
 }
-const alertcontainer = document.getElementsByClassName('alertContainer');
-function createNotif(mensaje, tipo) {
 
+function createNotif(mensaje, tipo) {
   const alert = document.createElement("div");
   alert.className = `alert alert-${tipo} mt-3`;
   alert.textContent = mensaje;
