@@ -2,6 +2,8 @@ let questions = [];
 let current = 0;
 let score = 0;
 
+
+
 document.addEventListener("DOMContentLoaded", async () => {
   if (window.location.pathname.includes("question.html")) {
     questions = await getQuestions();
@@ -75,8 +77,7 @@ function showQuestion() {
   const container = document.getElementById("quiz-container");
   container.innerHTML = `
     <article class="question-card">
-     <div class="notif">
-      </div>
+
       <h2>${q.question}</h2>
       <div class="options-grid">
         ${q.options
@@ -94,13 +95,20 @@ function showQuestion() {
   `;
 }
 
+
 function handleAnswer(selected, correct) {
   const buttons = document.querySelectorAll(".options-grid button");
   buttons.forEach((btn) => (btn.disabled = true));
 
-  if (selected === correct) score++;
+  if (selected === correct){
+    createNotif('respondido correctamente','success')
+    score++;
+  } else{
+    createNotif('error','danger')
+  }
 
-  setTimeout(nextQuestion, 500);
+
+  //setTimeout(nextQuestion, 500);
 }
 
 function nextQuestion() {
@@ -111,11 +119,13 @@ function nextQuestion() {
     endQuiz();
   }
 }
+const alertcontainer = document.getElementsByClassName('alertContainer');
 function createNotif(mensaje, tipo) {
+
   const alert = document.createElement("div");
   alert.className = `alert alert-${tipo} mt-3`;
   alert.textContent = mensaje;
-  alertContainer.appendChild(alert);
+  alertcontainer.appendChild(alert);
   setTimeout(() => {
       alert.remove();
 
