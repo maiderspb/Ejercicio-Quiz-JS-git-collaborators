@@ -158,7 +158,7 @@ function createNotif(mensaje, tipo) {
 function endQuiz() {
   const results = JSON.parse(localStorage.getItem("quizResults") || "[]").slice(
     -9
-  ); // mantiene 9 + actual = 10
+  );
   results.push({
     date: new Date().toLocaleDateString(),
     score: score,
