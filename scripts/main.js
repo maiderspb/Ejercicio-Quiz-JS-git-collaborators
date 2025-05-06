@@ -2,15 +2,15 @@ let questions = [];
 let current = 0;
 let score = 0;
 
-
-
 document.addEventListener("DOMContentLoaded", async () => {
-  if (window.location.pathname.includes("question.html")) {
+  const path = window.location.pathname;
+
+  if (path.includes("question.html")) {
     questions = await getQuestions();
     if (questions.length > 0) showQuestion();
   }
 
-  if (window.location.pathname.includes("results.html")) {
+  if (path.includes("results.html")) {
     const params = new URLSearchParams(window.location.search);
     const scoreValue = params.get("score");
 
@@ -26,8 +26,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  if (document.getElementById("resultsChart")) {
-    const results = JSON.parse(localStorage.getItem("quizResults") || "[]");
+  if (path.endsWith("/") || path.includes("index.html")) {
+    const results = JSON.parse(
+      localStorage.getItem("quizResults") || "[]"
+    ).slice(-5);
 
     if (results.length && window.Chart) {
       const ctx = document.getElementById("resultsChart");
@@ -41,82 +43,98 @@ document.addEventListener("DOMContentLoaded", async () => {
               label: "Puntuaciones",
               data: results.map((r) => r.score),
               borderColor: "blue",
-              fill: false,
-              tension: 0.1,
+              backgroundColor: "rgba(0, 0, 255, 0.1)",
+              fill: true,
+              tension: 0.3,
             },
           ],
         },
         options: {
           responsive: true,
           scales: {
-            x: {
-              title: {
-                display: true,
-                text: "Fecha",
-              },
-            },
+            x: { title: { display: true, text: "Fecha" } },
             y: {
-              title: {
-                display: true,
-                text: "Puntuación",
-              },
+              title: { display: true, text: "Puntuación" },
               beginAtZero: true,
               suggestedMax: 10,
             },
           },
         },
       });
+
+      const resultsList = document.getElementById("resultsList");
+      resultsList.innerHTML = `
+        <table class="table table-striped mt-3">
+          <thead><tr><th>Fecha</th><th>Aciertos</th></tr></thead>
+          <tbody>
+            ${results
+              .map((r) => `<tr><td>${r.date}</td><td>${r.score}</td></tr>`)
+              .join("")}
+          </tbody>
+        </table>
+        <button class="btn btn-danger mt-2" onclick="clearHistory()">Borrar historial</button>
+      `;
     } else {
-      console.warn("No hay resultados para mostrar en la gráfica.");
+      console.warn("No hay resultados para mostrar.");
     }
   }
 });
-const alertcontainer = document.getElementById('alertContainer');
+
+function handleAnswer(btnClicked, selected, correct) {
+  const buttons = document.querySelectorAll(".options-grid button");
+
+  buttons.forEach((btn) => {
+    btn.disabled = true;
+
+    if (btn.textContent === correct) {
+      btn.style.backgroundColor = "green";
+      btn.textContent += " ✅";
+    }
+
+    if (btn === btnClicked && selected !== correct) {
+      btn.style.backgroundColor = "red";
+      btn.textContent += " ❌";
+    }
+  });
+
+  if (selected === correct) {
+    createNotif("¡Correcto!", "success");
+    score++;
+  } else {
+    createNotif("Incorrecto", "danger");
+  }
+
+  const nextBtn = document.getElementById("nextBtn");
+  if (nextBtn) nextBtn.disabled = false;
+}
+
 function showQuestion() {
+  if (!questions[current]) return;
+
   const q = questions[current];
   const container = document.getElementById("quiz-container");
-  container.innerHTML = `
-    <article class="question-card">
 
+  const alertContainer = document.getElementById("alertContainer");
+  if (alertContainer) alertContainer.innerHTML = "";
+
+  container.innerHTML = `
+    <div class="question-card">
       <h2>${q.question}</h2>
       <div class="options-grid">
         ${q.options
-      .map(
-        (opt) =>
-          `<button onclick="handleAnswer('${opt}', '${q.correct}')">${opt}</button>`
-      )
-      .join("")}
+          .map(
+            (opt) =>
+              `<button onclick="handleAnswer(this, '${opt}', '${q.correct}')">${opt}</button>`
+          )
+          .join("")}
       </div>
-      <div class="question-count">Pregunta ${current + 1} de 10</div>
-      <div class="next-btn">
-        <button onclick="nextQuestion()">Siguiente</button>
-      </div>
-    </article>
-
+      <p>Pregunta ${current + 1} de 10</p>
+      <button id="nextBtn" onclick="nextQuestion()" disabled>Siguiente</button>
+    </div>
   `;
-}
-const alert = document.createElement("div");
-
-function handleAnswer(selected, correct) {
-  const buttons = document.querySelectorAll(".options-grid button");
-  buttons.forEach((btn) => (btn.disabled = true));
-
-  if (selected === correct){
-    createNotif('respondido correctamente','success')
-    setTimeout(nextQuestion, 500);
-    score++;
-    
-  } else{
-    createNotif('error','danger')
-    setTimeout(nextQuestion, 500);
-  }
-
-
- 
 }
 
 function nextQuestion() {
-  alert.remove()
   current++;
   if (current < 10) {
     showQuestion();
@@ -126,19 +144,21 @@ function nextQuestion() {
 }
 
 function createNotif(mensaje, tipo) {
+  const alertContainer = document.getElementById("alertContainer");
+  if (!alertContainer) return;
 
+  const alert = document.createElement("div");
   alert.className = `alert alert-${tipo} mt-3`;
   alert.textContent = mensaje;
-  alertcontainer.appendChild(alert);
-  setTimeout(() => {
-      alert.remove();
 
-    },3000)
-  
+  alertContainer.innerHTML = "";
+  alertContainer.appendChild(alert);
 }
 
 function endQuiz() {
-  const results = JSON.parse(localStorage.getItem("quizResults") || "[]");
+  const results = JSON.parse(localStorage.getItem("quizResults") || "[]").slice(
+    -9
+  ); // mantiene 9 + actual = 10
   results.push({
     date: new Date().toLocaleDateString(),
     score: score,
@@ -149,7 +169,8 @@ function endQuiz() {
 }
 
 async function getQuestions() {
-  const API_URL = "https://opentdb.com/api.php?amount=10&type=multiple";
+  const API_URL =
+    "https://opentdb.com/api.php?amount=10&category=18&type=multiple";
 
   try {
     const response = await fetch(API_URL);
@@ -188,86 +209,12 @@ async function getQuestions() {
         options: ["==", "===", "!=", "!=="],
         correct: "===",
       },
-      {
-        question:
-          "¿Cuál es el método para añadir un elemento al final de una matriz en JavaScript?",
-        options: [
-          "array.append(elemento)",
-          "array.add(elemento)",
-          "array.push(elemento)",
-          "array.push(elemento)",
-        ],
-        correct: "array.push(elemento)",
-      },
-
-      {
-        question:
-          "¿Cuál es la función para convertir una cadena en un número en JavaScript?",
-        options: [
-          "parseInt()",
-          "convertirEnInt()",
-          "cadenaANúmero()",
-          "aNúmero()",
-        ],
-        correct: "parseInt()",
-      },
-      {
-        question:
-          "¿Cuál es el método para eliminar el último elemento de una matriz en JavaScript?",
-        options: [
-          "array.pop()",
-          "array.eliminarÚltimo()",
-          "array.borrarÚltimo()",
-          "array.splice(-1)",
-        ],
-        correct: "array.pop()",
-      },
-      {
-        question: "¿Qué es una 'closure' en JavaScript?",
-        options: [
-          "Una función que se ejecuta inmediatamente después de ser definida",
-          "Una función que recuerda el ámbito en el que fue creada",
-          "Una función que solo se puede ejecutar una vez",
-          "Una función sin nombre",
-        ],
-        correct: "Una función que recuerda el ámbito en el que fue creada",
-      },
-      {
-        question:
-          "¿Qué método se utiliza para agregar un elemento al final de un array en JavaScript?",
-        options: ["add()", "append()", "push()", "insert()"],
-        correct: "push()",
-      },
-      {
-        question:
-          "¿Qué palabra clave se utiliza para declarar una constante en JavaScript?",
-        options: ["let", "var", "const", "constant"],
-        correct: "const",
-      },
-      {
-        question:
-          "¿Cuál de los siguientes métodos convierte un objeto JSON en una cadena?",
-        options: [
-          "JSON.parse()",
-          "JSON.convert()",
-          "JSON.stringify()",
-          "JSON.toString()",
-        ],
-        correct: "JSON.stringify()",
-      },
-      {
-        question:
-          "¿Qué método se utiliza para eliminar el último elemento de un array? ",
-        options: ["remove()", "pop()", "delete()", "splice()"],
-        correct: "pop()",
-      },
     ];
 
     const combined = shuffleArray([...apiQuestions, ...extraQuestions]).slice(
       0,
       10
     );
-
     return combined;
   } catch (error) {
     console.error("Error loading questions:", error);
@@ -283,4 +230,11 @@ function decodeHTML(html) {
   const txt = document.createElement("textarea");
   txt.innerHTML = html;
   return txt.value;
+}
+
+function clearHistory() {
+  if (confirm("¿Seguro que quieres borrar el historial?")) {
+    localStorage.removeItem("quizResults");
+    location.reload();
+  }
 }
