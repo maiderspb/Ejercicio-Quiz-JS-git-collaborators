@@ -89,12 +89,10 @@ function handleAnswer(btnClicked, selected, correct) {
     if (btn.textContent === correct) {
       btn.style.backgroundColor = "#4CAF50";
       btn.textContent += " ✅";
-    }
-    else if (btn === btnClicked && selected !== correct) {
+    } else if (btn === btnClicked && selected !== correct) {
       btn.style.backgroundColor = "#F44336";
       btn.textContent += " ❌";
-    }
-    else {
+    } else {
       btn.style.backgroundColor = "#9E9E9E";
       btn.style.color = "#FFFFFF";
     }
@@ -135,7 +133,9 @@ function showQuestion() {
         ${q.options
           .map(
             (opt) =>
-              `<button onclick="handleAnswer(this, '${escapeHtml(opt)}', '${escapeHtml(q.correct)}')">${escapeHtml(opt)}</button>`
+              `<button onclick="handleAnswer(this, '${escapeHtml(
+                opt
+              )}', '${escapeHtml(q.correct)}')">${escapeHtml(opt)}</button>`
           )
           .join("")}
       </div>
