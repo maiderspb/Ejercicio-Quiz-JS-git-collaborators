@@ -87,13 +87,16 @@ function handleAnswer(btnClicked, selected, correct) {
     btn.disabled = true;
 
     if (btn.textContent === correct) {
-      btn.style.backgroundColor = "green";
+      btn.style.backgroundColor = "#4CAF50";
       btn.textContent += " ✅";
     }
-
-    if (btn === btnClicked && selected !== correct) {
-      btn.style.backgroundColor = "red";
+    else if (btn === btnClicked && selected !== correct) {
+      btn.style.backgroundColor = "#F44336";
       btn.textContent += " ❌";
+    }
+    else {
+      btn.style.backgroundColor = "#9E9E9E";
+      btn.style.color = "#FFFFFF";
     }
   });
 
@@ -108,12 +111,20 @@ function handleAnswer(btnClicked, selected, correct) {
   if (nextBtn) nextBtn.disabled = false;
 }
 
+function escapeHtml(unsafe) {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function showQuestion() {
   if (!questions[current]) return;
 
   const q = questions[current];
   const container = document.getElementById("quiz-container");
-
   const alertContainer = document.getElementById("alertContainer");
   if (alertContainer) alertContainer.innerHTML = "";
 
@@ -124,7 +135,7 @@ function showQuestion() {
         ${q.options
           .map(
             (opt) =>
-              `<button onclick="handleAnswer(this, '${opt}', '${q.correct}')">${opt}</button>`
+              `<button onclick="handleAnswer(this, '${escapeHtml(opt)}', '${escapeHtml(q.correct)}')">${escapeHtml(opt)}</button>`
           )
           .join("")}
       </div>
